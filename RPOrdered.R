@@ -96,7 +96,7 @@ LL <- function(params){
   # simulating random parameters from their means and standard deviation
   beta = t( t(draws1)*SDRbeta + MRbeta )
   # constructing the mean function
-  mu <- exp(offset+rowSums(dataR2*beta))
+  mu <- offset+rowSums(dataR2*beta)
   
   # cumulative probability functions for logistic distribution (ordered logit)
   prob[,1] <- plogis(cutpoint1 - mu)
