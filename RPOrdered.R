@@ -59,16 +59,16 @@ preparedraws()
 # placeholder for probabilities
 prob = matrix(NA,nrow = N*Ndraws, ncol = S)
 
-# fixing parameters across grouped observations i.e. grouped random parameters
-# Comment out if there is no panel
-block = length(unique(dataset[,'ID']))
-ngroup = length(unique(dataset[,'Group']))
-for (i in 1:Ndraws){
-  tempInd = ((i-1)*block*ngroup) + (1:block)
-  for (ii in 2:ngroup){
-    draws1[tempInd+(ii-1)*block,] = draws1[tempInd,]
-  }
-}
+# # fixing parameters across grouped observations i.e. grouped random parameters
+# # Comment out if there is no panel
+# block = length(unique(dataset[,'ID']))
+# ngroup = length(unique(dataset[,'Group']))
+# for (i in 1:Ndraws){
+#   tempInd = ((i-1)*block*ngroup) + (1:block)
+#   for (ii in 2:ngroup){
+#     draws1[tempInd+(ii-1)*block,] = draws1[tempInd,]
+#   }
+# }
 
 ## data preparation
 # separating the variables with fixed parameters 
@@ -101,17 +101,15 @@ LL <- function(params){
   # cumulative probability functions for logistic distribution (ordered logit)
   prob[,1] <- plogis(cutpoint1 - mu)
   prob[,2] <- plogis(cutpoint2 - mu) - prob[,1]
-  prob[,3] <- 1 - prob[,1] - prob[,2]
-  
+
   # cumulative probability functions for normal distribution (ordered probit)
   # prob[,1] <- pnorm(cutpoint1 - mu)
   # prob[,2] <- pnorm(cutpoint2 - mu) - prob[,1]
-  # prob[,3] <- 1 - prob[,1] - prob[,2]
 
   # simulated (log)probabilities of each ordered category
   PR1 <- log(rowMeans(matrix(prob[,1], ncol = Ndraws)))
   PR2 <- log(rowMeans(matrix(prob[,2], ncol = Ndraws)))
-  PR3 <- log(rowMeans(matrix(prob[,3], ncol = Ndraws)))
+  PR3 <- 1-(PR1+PR2)
   
   # simulated loglikelihood for fractional split model; this has been written for only 3 ordered categories, adjust as needed
   loglik <- sum(I[,1]*PR1+I[,2]*PR2+I[,3]*PR3)
